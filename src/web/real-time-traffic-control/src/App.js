@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import * as Realm from "realm-web";
 import {
@@ -75,6 +76,7 @@ const App = () => {
       <nav className="App-Container-NavBar">
         <img
           height="50"
+          alt="App Logo"
           src="https://th.bing.com/th/id/R.33486074ccf6b63a4430647280fd7f2c?rik=pJwHPnu2tXb0bw&riu=http%3a%2f%2fmytraffic.com.my%2fimages%2fTraffic-Controller-Icon-01.png&ehk=P98027%2bMA1R%2bTCf9945xNrTzrE%2bR9vEuX2qV5pJGEFk%3d&risl=&pid=ImgRaw&r=0"
         ></img>
         <h3>REAL TIME TRAFFIC CONTROL</h3>
@@ -103,6 +105,7 @@ const App = () => {
               <div className="App-Container-Card-Header">
                 <img
                   height="30"
+                  alt="Live icon"
                   src="https://cdn1.iconfinder.com/data/icons/youtube-23/29/Vector-10-512.png"
                 ></img>
                 <h4>Events</h4>

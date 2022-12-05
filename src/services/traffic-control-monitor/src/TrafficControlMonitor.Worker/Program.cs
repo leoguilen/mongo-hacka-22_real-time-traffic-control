@@ -21,7 +21,8 @@ var host = Host.CreateDefaultBuilder(args)
                 {
                     HostName = ctx.Configuration["RabbitMq:HostName"],
                     UserName = ctx.Configuration["RabbitMq:UserName"],
-                    Password = ctx.Configuration["RabbitMq:Password"]
+                    Password = ctx.Configuration["RabbitMq:Password"],
+                    VirtualHost = ctx.Configuration["RabbitMq:VirtualHost"] ?? "/"
                 };
                 var connection = factory.CreateConnection();
                 var channel = connection.CreateModel();

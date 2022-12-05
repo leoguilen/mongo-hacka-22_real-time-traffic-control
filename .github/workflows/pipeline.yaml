@@ -1,0 +1,33 @@
+name: Development Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  
+  # gh-pages-deploy:
+  #   uses: ./.github/workflows/ghpages-deploy.yaml
+  simulator-docker-image-build:
+    name: Build simulator docker image
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    with:
+      image-name: 'speed-cam-simulator'
+      project-path: 'src/simulators/speed-cam-simulator'
+  traffic-control-monitor-docker-image-build:
+    name: Build traffic control monitor service docker image
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    with:
+      image-name: 'traffic-control-monitor-svc'
+      project-path: 'src/services/traffic-control-monitor'
+  fine-collection-docker-image-build:
+    name: Build fine collection service docker image
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    with:
+      image-name: 'fine-collection-svc'
+      project-path: 'src/services/fine-collection'
+  vehicle-registration-docker-image-build:
+    name: Build vehicle registration service docker image
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    with:
+      image-name: 'vehicle-registration-svc'
+      project-path: 'src/services/vehicle-registration'

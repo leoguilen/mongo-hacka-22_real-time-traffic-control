@@ -2,6 +2,7 @@
   "name": "real-time-traffic-control",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://leoguilen.github.io/mongo-hacka-22_real-time-traffic-control/",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

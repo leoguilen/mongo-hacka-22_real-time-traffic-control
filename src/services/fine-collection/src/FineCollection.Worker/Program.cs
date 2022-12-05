@@ -14,6 +14,7 @@ var host = Host.CreateDefaultBuilder(args)
                     HostName = config.Server,
                     UserName = config.Username,
                     Password = config.Password,
+                    VirtualHost = ctx.Configuration["AmqpBroker:VirtualHost"] ?? "/",
                     ClientProvidedName = config.ClientId,
                     AutomaticRecoveryEnabled = true,
                     NetworkRecoveryInterval = TimeSpan.FromSeconds(10)

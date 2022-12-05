@@ -1,0 +1,52 @@
+name: Github pages deploy template
+
+on:
+  workflow_call:
+  
+defaults:
+  run:
+    shell: bash
+    working-directory: './src/web/real-time-traffic-control'
+
+jobs:
+  build:
+    name: Build
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    - name: Install dependencies
+      run: npm ci
+    - name: Build app
+      run: npm run build --if-present
+    - name: Copy build files to artefact directory
+      run: |
+        mkdir -p ${{ github.workspace }}/artifact
+        cp -r ./build ${{ github.workspace }}/artifact
+    - name: Upload GitHub Pages artifact
+      uses: actions/upload-pages-artifact@v1.0.5
+      with:
+        path: ${{ github.workspace }}/artifact/build
+  
+  deploy:
+    name: Deploy
+    needs: build
+
+    permissions:
+      id-token: write
+      pages: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
