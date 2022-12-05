@@ -1,0 +1,10 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+**/.idea/
+
+# files
+Dockerfile*
+.gitignore
+**/*.md

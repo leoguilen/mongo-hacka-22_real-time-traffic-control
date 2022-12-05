@@ -1,0 +1,134 @@
+version: '3'
+
+services:
+  simulator:
+    container_name: speed-cam-simulator
+    build:
+      context: ../../src/simulators/speed-cam-simulator
+      dockerfile: Dockerfile
+    environment:
+      - "MQTT_BROKER=tcp://mosquitto:1883"
+      - "MQTT_USERNAME=mosquitto"
+      - "MQTT_PASSWORD=mosquitto"
+      - "MQTT_TOPIC=speed-cam/"
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - mosquitto
+
+  traffic-control-monitor:
+    container_name: traffic-control-monitor-svc
+    build:
+      context: ../../src/services/traffic-control-monitor
+      dockerfile: Dockerfile
+    environment:
+      - "DOTNET_ENVIRONMENT=Development"
+      - "MqttBroker__Server=mqtt://mosquitto:1883"
+      - "RabbitMq__HostName=rabbitmq"
+      - "ConnectionStrings__MongoDb=mongodb://mongo:27017"
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - mosquitto
+      - rabbitmq
+      - mongo
+  
+  fine-collection:
+    container_name: fine-collection-svc
+    build:
+      context: ../../src/services/fine-collection
+      dockerfile: Dockerfile
+    environment:
+      - "DOTNET_ENVIRONMENT=Development"
+      - "AmqpBroker__Server=rabbitmq"
+      - "ConnectionStrings__MongoDb=mongodb://mongo:27017"
+      - "VehicleRegistrationApi__BaseUrl=http://vehicle-registration-api"
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - mosquitto
+      - rabbitmq
+      - mongo
+      - vehicle-registration-api
+
+  vehicle-registration-api:
+    container_name: vehicle-registration-api
+    build:
+      context: ../../src/services/vehicle-registration
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - "HTTP_PORT=80"
+    ports:
+      - "3000:80"
+    networks:
+      - backend
+      
+  mosquitto:
+    build:
+      context: ./mosquitto
+      dockerfile: Dockerfile
+      args:
+        - MOSQUITTO_VERSION=${MOSQUITTO_VERSION:-latest}
+    environment:
+      - MOSQUITTO_USERNAME=${MOSQUITTO_USERNAME:-mosquitto}
+      - MOSQUITTO_PASSWORD=${MOSQUITTO_PASSWORD:-mosquitto}
+    image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
+    container_name: eclipse-mosquitto
+    restart: always
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    ports:
+      - 1883:1883
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    container_name: rabbitmq
+    restart: always
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - backend
+  
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - backend
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+    networks:
+      - backend
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
+  mongo-data:
+  rabbitmq-data:
+  rabbitmq-log:
+
+networks:
+  backend:
+    driver: bridge
